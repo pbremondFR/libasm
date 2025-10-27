@@ -15,6 +15,8 @@ extern char		*ft_strdup(const char *str);
 extern ssize_t	ft_read(int fd, void *buf, size_t count);
 extern ssize_t	ft_write(int fd, const void *buf, size_t count);
 
+extern int		ft_atoi_base(char *str, char *base);
+
 int signum_i32(int32_t n)
 {
 	if (n < 0)
@@ -231,6 +233,28 @@ int main()
 			free(a);
 			free(b);
 		}
+	}
+	// ft_atoi_base
+	{
+		int x = 0;
+		x = ft_atoi_base("123", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("+123", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("0", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("-0", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("-123", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("        -123", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("        123", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("        +123", "0123456789");
+		printf("%d\n", x);
 	}
 	return 0;
 }
