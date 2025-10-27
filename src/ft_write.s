@@ -8,7 +8,7 @@ ft_write:
 	mov rax, 1		; write syscall in x64 Linux
 	syscall			; No need to change register order, it's the same order for the first 3 registers
 	pop rdx			; Store errno location into rdx
-	cmp rax, -4095
+	cmp rax, -4095	; Funny. https://stackoverflow.com/a/47566663, and https://stackoverflow.com/a/38752895
 	jae .error
 	ret
 .error:

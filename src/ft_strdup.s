@@ -23,5 +23,5 @@ ft_strdup:
 .error:
 	call [rel __errno_location wrt ..got]
 	mov DWORD [rax], 12 ; ENOMEM
-	xor eax, eax
+	xor eax, eax		; Return NULL
 	ret

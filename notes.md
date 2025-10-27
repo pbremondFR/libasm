@@ -12,6 +12,13 @@ Other registers: `r10`, `r11`
 `rax`: return value of function
 `rsp`: stack pointer
 
+## `syscall` calling convention (x86-64 Linux)
+
+Calling convention and parameters when using `syscall` - warning, it's different from `int 0x80`:
+|syscall|1st|2nd|3rd|4th|5th|6th|retval|
+|-------|---|---|---|---|---|---|------|
+|rax    |rdi|rsi|rdx|r10|r8 |r9 |rax   |
+
 ## Those funny string instructions
 Disassembling and reverse-engineering the binaries of the "rainfall" and "override" projects taught me about the string family of operations in assembly. This is why the `ft_strlen` implementation looks a little different from others: when you see a `repne scasb` in assembly, chances are you're looking at a `strlen` or `memchr` call.
 
