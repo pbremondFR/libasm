@@ -149,9 +149,9 @@ int main()
 		ssize_t retval1, retval2;
 		int errno1, errno2;
 
-		// Read entire file
-		fd1 = open("output_std.txt", O_RDWR | O_CREAT);
-		fd2 = open("output_ft.txt", O_RDWR | O_CREAT);
+		// Write to file
+		fd1 = open("output_std.txt", O_RDWR | O_CREAT, 0644);
+		fd2 = open("output_ft.txt", O_RDWR | O_CREAT, 0644);
 		retval1 = write(fd1, "Hello, world!", 13);
 		retval2 = ft_write(fd2, "Hello, world!", 13);
 
@@ -188,8 +188,8 @@ int main()
 		assert(errno1 == errno2);
 
 		// Write to file without write permission
-		fd1 = open("empty_std.txt", O_RDONLY | O_CREAT);
-		fd2 = open("empty_ft.txt", O_RDONLY | O_CREAT);
+		fd1 = open("empty_std.txt", O_RDONLY | O_CREAT, 0644);
+		fd2 = open("empty_ft.txt", O_RDONLY | O_CREAT, 0644);
 		retval1 = write(fd1, "Hello, world!", 13);
 		errno1 = errno;
 		retval2 = ft_write(fd2, "Hello, world!", 13);
