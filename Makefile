@@ -1,6 +1,6 @@
 SRC_DIR = src
 OBJ_DIR = obj
-SRC_FILES = ft_strlen.s ft_strcpy.s ft_strcmp.s ft_strdup.s
+SRC_FILES = ft_strlen.s ft_strcpy.s ft_strcmp.s ft_read.s ft_write.s ft_strdup.s
 SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ = $(subst $(SRC_DIR)/, $(OBJ_DIR)/, $(patsubst %.s, %.o, $(SRC)))
 

@@ -12,5 +12,8 @@ Other registers: `r10`, `r11`
 `rax`: return value of function
 `rsp`: stack pointer
 
+## Those funny string instructions
+Disassembling and reverse-engineering the binaries of the "rainfall" and "override" projects taught me about the string family of operations in assembly. This is why the `ft_strlen` implementation looks a little different from others: when you see a `repne scasb` in assembly, chances are you're looking at a `strlen` or `memchr` call.
+
 ## Valgrind not working:
 Valgrind won't work with this project, because I'm using `repnz movsb`, which it doesn't seem to like. Try it out yourself if you want.

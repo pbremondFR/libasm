@@ -3,3 +3,4 @@ tester_obj/
 *.o
 tester
 libasm.a
+*.txt
