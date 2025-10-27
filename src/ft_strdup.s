@@ -6,18 +6,18 @@ section .text
 global ft_strdup
 
 ft_strdup:
-	; mov rdx, rdi	; Save string pointer
 	push rdi		; Save string pointer
 	call ft_strlen
-	inc rax			; Space for NULL-terminator
-	mov rdi, rax	; Call malloc for this
-	mov rbx, rax	; Save length of string
+	inc rax			; Add space for NULL-terminator
+	mov rdi, rax	; Pass that size as an arg to malloc
+	push rax		; Save length of string to copy
 	call [rel malloc wrt ..got]
-	test rax, rax
-	jz .error
 	mov rdi, rax	; dest ptr in rdi
+	pop rcx			; Length of copy
 	pop rsi			; src ptr in rsi
-	mov rcx, rbx	; Length of copy
+					; Pop those last two here to avoid fucking up the stack when branching into the error
+	test rax, rax	; Only NOW, check if malloc returned NULL, if so, goto error
+	jz .error
 	repnz movsb		; Copy string including NULL-terminator
 	ret
 .error:

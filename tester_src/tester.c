@@ -15,6 +15,16 @@ extern char		*ft_strdup(const char *str);
 extern ssize_t	ft_read(int fd, void *buf, size_t count);
 extern ssize_t	ft_write(int fd, const void *buf, size_t count);
 
+int signum_i32(int32_t n)
+{
+	if (n < 0)
+		return -1;
+	else if (n > 0)
+		return 1;
+	else
+		return 0;
+}
+
 int main()
 {
 	// strlen
@@ -66,7 +76,12 @@ int main()
 		{
 			int a = strcmp(tests[i], tests[i + 1]);
 			int b = ft_strcmp(tests[i], tests[i + 1]);
-			assert(a == b);
+			printf("a: %s, b: %s\na: %d, b: %d\n", tests[i], tests[i + 1], a, b);
+
+			// Spec only specifies the sign, not the value.
+			// The == assert behaves fine regardless, except in valgrind for some reason.
+			// assert(a == b);
+			assert(signum_i32(a) == signum_i32(b));
 		}
 	}
 	// read
