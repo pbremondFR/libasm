@@ -255,6 +255,18 @@ int main()
 		printf("%d\n", x);
 		x = ft_atoi_base("        +123", "0123456789");
 		printf("%d\n", x);
+		x = ft_atoi_base("99999999999999999999999999999", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("2147483647", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("2147483648", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("-2147483647", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("-2147483648", "0123456789");
+		printf("%d\n", x);
+		x = ft_atoi_base("-2147483649", "0123456789");
+		printf("%d\n", x);
 	}
 	return 0;
 }

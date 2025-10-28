@@ -1,6 +1,8 @@
 section .text
 global ft_atoi_base
 
+INT32_MAX equ 2147483647
+
 isspace:
 	cmp dl, 32	; Is space character
 	je .true
@@ -67,7 +69,7 @@ ft_atoi_base:
 	test eax, eax	; Error if base is wrong
 	jz .error
 	xor eax, eax	; Result in eax
-	mov r10d, 1		; Set sign to 1
+	xor r10, r10	; Negative sign flag set to 0 by default
 .skip_spaces_loop:
 	mov dl, BYTE [rdi]	; Load character to check inside dl
 	call isspace
@@ -86,21 +88,28 @@ ft_atoi_base:
 .parse_sign:
 	inc rdi				; Increase index because we had a sign character
 	cmp dl, '-'
-	mov edx, -1
-	cmove r10d, edx		; Conditional move -1 into sign register if character == '-'
+	sete r10b		; Set r10 to 1 if sign is negative, 0 otherwise
 .parsing_loop:
 	movzx ecx, BYTE [rdi]	; Store current character in ecx
 	sub cl, '0'
 	cmp cl, 9
-	ja .exit		; Stop parsing loop if not a digit
+	ja .exit_loop	; Stop parsing loop if not a digit
 	mul r11d		; Multiply result by length of base
-	add eax, ecx	; Result += character - '0'
-	test edx, edx	; If edx != 0, then we are overflowing, which means we should return an error
+	test edx, edx	; If edx != 0, then the multiplication has overflown, which means we should return an error
 	jnz .error
+	add eax, ecx	; Result += character - '0'
+	jc .error
 	inc rdi
 	jmp .parsing_loop
+.exit_loop:
+	add r10, INT32_MAX
+	cmp eax, r10d
+	ja .error
+	cmp r10, INT32_MAX
+	je .exit
+	neg eax
+	jmp .exit
 .error:
 	xor eax, eax
 .exit:
-	mul r10d	; Multiply by sign
 	ret
