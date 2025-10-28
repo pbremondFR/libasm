@@ -64,6 +64,7 @@ check_base:
 ft_atoi_base:
 	push rdi		; Save str pointer
 	mov rdi, rsi	; Pass base as arg to check_base
+	xor r11, r11	; r11d will hold the length of the base
 	call check_base
 	pop rdi			; Restore str pointer
 	test eax, eax	; Error if base is wrong
@@ -90,10 +91,21 @@ ft_atoi_base:
 	cmp dl, '-'
 	sete r10b		; Set r10 to 1 if sign is negative, 0 otherwise
 .parsing_loop:
-	movzx ecx, BYTE [rdi]	; Store current character in ecx
-	sub cl, '0'
-	cmp cl, 9
-	ja .exit_loop	; Stop parsing loop if not a digit
+	mov r8d, eax		; Save result in r8d
+	mov r9, rdi			; Save string pointer into r9
+	mov al, BYTE [rdi]	; Search for current char...
+	mov rdi, rsi		; ...Search base string...
+	mov rcx, r11		; ...Length of base to check...
+	inc rcx				; ...+1 because repnz increases rcx 1 above strlen...
+	repnz scasb			; ...Search for current char in string
+	test rcx, rcx
+	jz .exit_loop		; Character not found, finish parsing
+	dec rcx				; Decrease rcx because we increased it earlier...
+	sub ecx, r11d		; ...invert it to get the actual index...
+	neg ecx
+	dec ecx				; ...last decrease, ecx = index of found character
+	mov rdi, r9			; Restore string pointer
+	mov eax, r8d		; Restore result
 	mul r11d		; Multiply result by length of base
 	test edx, edx	; If edx != 0, then the multiplication has overflown, which means we should return an error
 	jnz .error
@@ -102,11 +114,12 @@ ft_atoi_base:
 	inc rdi
 	jmp .parsing_loop
 .exit_loop:
-	add r10, INT32_MAX
-	cmp eax, r10d
-	ja .error
-	cmp r10, INT32_MAX
-	je .exit
+	mov eax, r8d		; Restore result from r8
+	add r10, INT32_MAX	; r10 is either INT32_MAX or INT32_MAX + 1 (if sign bit is set)...
+	cmp eax, r10d		; ... compare unsigned result to r10...
+	ja .error			; If above, overflow -> error
+	cmp r10, INT32_MAX	; If r10 is INT32_MAX, then sign bit wasn't set, go to exit...
+	je .exit			; ... otherwise sign was there, negate result before exit
 	neg eax
 	jmp .exit
 .error:

@@ -7,6 +7,9 @@
 #include <errno.h>
 
 #define SIZEOF_ARRAY(x) (sizeof(x) / sizeof(x[0]))
+#define BASE_BIN	"01"
+#define BASE_DEC	"0123456789"
+#define BASE_HEX	"0123456789abcdef"
 
 extern size_t	ft_strlen(char const *str);
 extern char		*ft_strcpy(char *dest, char const *src);
@@ -16,6 +19,8 @@ extern ssize_t	ft_read(int fd, void *buf, size_t count);
 extern ssize_t	ft_write(int fd, const void *buf, size_t count);
 
 extern int		ft_atoi_base(char *str, char *base);
+
+#define assert_eq(a, b)	({ if (a == b) ; else { dprintf(STDERR_FILENO, "###### a != b ######\na = %d, b = %d\n", a, b); assert(0); } })
 
 int signum_i32(int32_t n)
 {
@@ -78,7 +83,7 @@ int main()
 		{
 			int a = strcmp(tests[i], tests[i + 1]);
 			int b = ft_strcmp(tests[i], tests[i + 1]);
-			printf("a: %s, b: %s\na: %d, b: %d\n", tests[i], tests[i + 1], a, b);
+			// printf("a: %s, b: %s\na: %d, b: %d\n", tests[i], tests[i + 1], a, b);
 
 			// Spec only specifies the sign, not the value.
 			// The == assert behaves fine regardless, except in valgrind for some reason.
@@ -236,37 +241,78 @@ int main()
 	}
 	// ft_atoi_base
 	{
-		int x = 0;
-		x = ft_atoi_base("123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("+123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("0", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("-0", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("-123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("        -123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("        123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("        +123", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("99999999999999999999999999999", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("2147483647", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("2147483648", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("-2147483647", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("-2147483648", "0123456789");
-		printf("%d\n", x);
-		x = ft_atoi_base("-2147483649", "0123456789");
-		printf("%d\n", x);
+		// Decimal
+		assert_eq(123,	ft_atoi_base("123", BASE_DEC));
+		assert_eq(123,	ft_atoi_base("+123", BASE_DEC));
+		assert_eq(0,	ft_atoi_base("0", BASE_DEC));
+		assert_eq(0,	ft_atoi_base("-0", BASE_DEC));
+		assert_eq(0,	ft_atoi_base("", BASE_DEC));
+		assert_eq(-123,	ft_atoi_base("-123", BASE_DEC));
+		assert_eq(-123,	ft_atoi_base("        -123", BASE_DEC));
+		assert_eq(123,	ft_atoi_base("        123", BASE_DEC));
+		assert_eq(123,	ft_atoi_base("        +123", BASE_DEC));
+
+		assert_eq(0,			ft_atoi_base("99999999999999999999999999999", BASE_DEC));
+		assert_eq(2147483647,	ft_atoi_base("2147483647", BASE_DEC));
+		assert_eq(0,			ft_atoi_base("2147483648", BASE_DEC));
+		assert_eq(-2147483647,	ft_atoi_base("-2147483647", BASE_DEC));
+		assert_eq((int)-2147483648,	ft_atoi_base("-2147483648", BASE_DEC));
+		assert_eq(0,			ft_atoi_base("-2147483649", BASE_DEC));
+
+		assert_eq(321,	ft_atoi_base("321Salut les amis", BASE_DEC));
+		assert_eq(321000,	ft_atoi_base("321000Salut les amis", BASE_DEC));
+		assert_eq(99,	ft_atoi_base("99apouet", BASE_DEC));
+		assert_eq(-99,	ft_atoi_base("-99     pouet", BASE_DEC));
+		assert_eq(42,	ft_atoi_base("0000042 c'est has been", BASE_DEC));
+		assert_eq(0,	ft_atoi_base("000+0042 c'est has been", BASE_DEC));
+
+		// Binary
+		assert_eq(0b1111011,	ft_atoi_base("1111011", BASE_BIN));
+		assert_eq(0b1111011,	ft_atoi_base("+1111011", BASE_BIN));
+		assert_eq(0,	ft_atoi_base("0", BASE_BIN));
+		assert_eq(0,	ft_atoi_base("-0", BASE_BIN));
+		assert_eq(0,	ft_atoi_base("", BASE_BIN));
+		assert_eq(-123,	ft_atoi_base("-1111011", BASE_BIN));
+		assert_eq(-123,	ft_atoi_base("        -1111011", BASE_BIN));
+		assert_eq(123,	ft_atoi_base("        1111011", BASE_BIN));
+		assert_eq(123,	ft_atoi_base("        +1111011", BASE_BIN));
+
+		assert_eq(0,			ft_atoi_base("99999999999999999999999999999", BASE_BIN));
+		assert_eq(2147483647,	ft_atoi_base("1111111111111111111111111111111", BASE_BIN));
+		assert_eq(0,			ft_atoi_base("10000000000000000000000000000000", BASE_BIN));
+		assert_eq(-2147483647,	ft_atoi_base("-1111111111111111111111111111111", BASE_BIN));
+		assert_eq((int)-2147483648,	ft_atoi_base("-10000000000000000000000000000000", BASE_BIN));
+		assert_eq(0,			ft_atoi_base("-10000000000000000000000000000001", BASE_BIN));
+
+		assert_eq(321,	ft_atoi_base("101000001Salut les amis", BASE_BIN));
+		assert_eq(42,	ft_atoi_base("00000000101010 c'est has been", BASE_BIN));
+		assert_eq(0,	ft_atoi_base("000+0000101010 c'est has been", BASE_BIN));
+
+		// Hexadecimal
+		assert_eq(0x7b,	ft_atoi_base("7b", BASE_HEX));
+		assert_eq(0x7b,	ft_atoi_base("+7b", BASE_HEX));
+		assert_eq(0,	ft_atoi_base("0", BASE_HEX));
+		assert_eq(0,	ft_atoi_base("-0", BASE_HEX));
+		assert_eq(0,	ft_atoi_base("", BASE_HEX));
+		assert_eq(-123,	ft_atoi_base("-7b", BASE_HEX));
+		assert_eq(-123,	ft_atoi_base("        -7b", BASE_HEX));
+		assert_eq(123,	ft_atoi_base("        7b", BASE_HEX));
+		assert_eq(123,	ft_atoi_base("        +7b", BASE_HEX));
+
+		// Invalid digits -> 0, overflow and boundary checks
+		assert_eq(0,			ft_atoi_base("zzzzzzzzzzzzzzzzzzzz", BASE_HEX));
+		assert_eq(2147483647,	ft_atoi_base("7fffffff", BASE_HEX));
+		assert_eq(0,			ft_atoi_base("80000000", BASE_HEX));
+		assert_eq(-2147483647,	ft_atoi_base("-7fffffff", BASE_HEX));
+		assert_eq((int)-2147483648,	ft_atoi_base("-80000000", BASE_HEX));
+		assert_eq(0,			ft_atoi_base("-80000001", BASE_HEX));
+
+		// Trailing non-digit text and zero+sign cases
+		assert_eq(321,		ft_atoi_base("141Salut les amis", BASE_HEX));
+		assert_eq(321000,	ft_atoi_base("4e5e8Salut les amis", BASE_HEX));
+		assert_eq(-99,		ft_atoi_base("-63     pouet", BASE_HEX));
+		assert_eq(42,		ft_atoi_base("000002a c'est has been", BASE_HEX));
+		assert_eq(0,		ft_atoi_base("000+00002a c'est has been", BASE_HEX));
 	}
 	return 0;
 }

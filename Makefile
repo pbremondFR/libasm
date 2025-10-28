@@ -10,7 +10,7 @@ TESTER_SRC_FILES = tester.c
 TESTER_SRC = $(addprefix $(TESTER_SRC_DIR)/, $(TESTER_SRC_FILES))
 TESTER_OBJ = $(subst $(TESTER_SRC_DIR)/, $(TESTER_OBJ_DIR)/, $(patsubst %.c, %.o, $(TESTER_SRC)))
 
-ASFLAGS = -felf64
+ASFLAGS = -felf64 -g
 # CC = clang
 CFLAGS := -Wall -Wextra
 LDFLAGS =
