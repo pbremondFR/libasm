@@ -239,6 +239,7 @@ int main()
 			free(b);
 		}
 	}
+#ifdef FT_BONUS
 	// ft_atoi_base
 	{
 		// Decimal
@@ -314,5 +315,6 @@ int main()
 		assert_eq(42,		ft_atoi_base("000002a c'est has been", BASE_HEX));
 		assert_eq(0,		ft_atoi_base("000+00002a c'est has been", BASE_HEX));
 	}
+#endif
 	return 0;
 }

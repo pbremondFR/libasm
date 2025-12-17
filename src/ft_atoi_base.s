@@ -1,3 +1,5 @@
+%ifdef FT_BONUS
+
 section .text
 global ft_atoi_base
 
@@ -126,3 +128,5 @@ ft_atoi_base:
 	xor eax, eax
 .exit:
 	ret
+
+%endif

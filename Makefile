@@ -11,24 +11,24 @@ TESTER_SRC = $(addprefix $(TESTER_SRC_DIR)/, $(TESTER_SRC_FILES))
 TESTER_OBJ = $(subst $(TESTER_SRC_DIR)/, $(TESTER_OBJ_DIR)/, $(patsubst %.c, %.o, $(TESTER_SRC)))
 
 ASFLAGS = -felf64 -g
-# CC = clang
 CFLAGS := -Wall -Wextra
 LDFLAGS =
+
+# CC ?= cc
+# AR ?= ar
 
 TARGET = libasm.a
 TESTER_TARGET = tester
 
 $(TARGET): $(OBJ)
-	ar rcs $(TARGET) $(OBJS)
+	$(AR) rcs $(TARGET) $(OBJ)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.s
 	@mkdir -p $(@D)
 	nasm $(ASFLAGS) $< -o $@
 
-
-
-$(TESTER_TARGET): $(OBJ) $(TESTER_OBJ)
-	$(CC) $(TESTER_OBJ) $(OBJ) -o $(TESTER_TARGET) $(LDFLAGS)
+$(TESTER_TARGET): $(TARGET) $(TESTER_OBJ)
+	$(CC) $(TESTER_OBJ) $(TARGET) -o $(TESTER_TARGET) $(LDFLAGS)
 
 $(TESTER_OBJ_DIR)/%.o : $(TESTER_SRC_DIR)/%.c
 	@mkdir -p $(@D)
@@ -46,4 +46,14 @@ fclean: clean
 clean:
 	rm -rf $(OBJ_DIR) $(TESTER_OBJ_DIR)
 
-.PHONY: clean fclean re all bonus $(TESTER_TARGET)
+# Build the library with FT_DEBUG defined for both asm and C
+bonus: ASFLAGS += -DFT_BONUS
+bonus: CFLAGS += -DFT_BONUS
+bonus: $(TARGET)
+
+# Build the tester with FT_DEBUG defined (affects assembler and C compilation)
+tester_bonus: ASFLAGS += -DFT_BONUS
+tester_bonus: CFLAGS += -DFT_BONUS
+tester_bonus: $(TESTER_TARGET)
+
+.PHONY: clean fclean re all bonus tester_bonus
